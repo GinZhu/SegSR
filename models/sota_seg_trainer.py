@@ -1,6 +1,6 @@
 from models.basic_trainer import *
 import segmentation_models_pytorch as smp
-
+from loss.seg_loss import SegLoss
 from utils.optim import make_optimizer, make_scheduler
 import torch
 from torch.utils.data import DataLoader, RandomSampler
@@ -47,7 +47,7 @@ class SRTrainer(BasicTrainer):
 
         # loss functions
         self.module_names.append('loss')
-        self.loss = SRLoss(paras)
+        self.loss = SegLoss(paras)
         self.training_loss_components = self.loss.loss_components
 
         # evaluation functions
@@ -98,17 +98,12 @@ class SRTrainer(BasicTrainer):
                 self.model_g.train()
                 input_imgs = training_batch['in']
                 target_imgs = training_batch['out']
-                res_imgs = training_batch['res']
 
-                input_imgs, target_imgs, res_imgs = self.prepare(
-                    input_imgs, target_imgs, res_imgs
+                input_imgs, target_imgs = self.prepare(
+                    input_imgs, target_imgs
                 )
 
                 rec_imgs = self.model_g(input_imgs)
-
-                # model embedding
-                if self.residual_scale > 0.:
-                    rec_imgs = rec_imgs * (1 - self.residual_scale) + res_imgs * self.residual_scale
 
                 loss, repo = self.loss(rec_imgs, target_imgs)
 
@@ -159,16 +154,15 @@ class SRTrainer(BasicTrainer):
 
     def __inference_one__(self, sample):
         img = sample['in']
-        res_img = sample['res']
-        img, res_img = self.prepare(img, res_img)
+        img = self.prepare(img)
         self.model_g.eval()
         with torch.no_grad():
-            rec_img = self.model_g(img)[0]
-            if self.residual_scale > 0.:
-                rec_img = rec_img * (1. - self.residual_scale) + res_img * self.residual_scale
-        rec_img = self.tensor_2_numpy(rec_img)
+            pred_segmentation = self.model_g(img)[0]
+        pred_segmentation = self.tensor_2_numpy(pred_segmentation)
+        # pred is one hot like C x H x W
 
-        return rec_img
+
+        return pred_segmentation
 
     def weights_init(self):
         """
