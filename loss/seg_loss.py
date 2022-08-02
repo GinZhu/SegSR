@@ -1,6 +1,6 @@
 from loss.basic_loss import BasicLoss
 import segmentation_models_pytorch as smp
-from torch import nn
+import torch
 
 
 class SegLoss(BasicLoss):
@@ -24,6 +24,7 @@ class SegLoss(BasicLoss):
         """
         if gt.dim() is 4:   # N x 1 x H x W
             gt = gt[:, 0]   # N x H x W
+        gt = gt.type(torch.int)
         repo = {}
         scalars = self.training_loss_scalars[self.current_training_state]
         loss = 0.
