@@ -82,10 +82,6 @@ class BasicLoss(ABC):
                 states[n] = f.state_dict()
         return states
 
-    @abstractmethod
-    def apply(self, fn):
-        pass
-
     def set_training_state(self, ts):
         self.current_training_state = ts
 
