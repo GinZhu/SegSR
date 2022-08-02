@@ -22,7 +22,7 @@ class SRTrainer(BasicTrainer):
         self.DS_train = DS_train
         self.DS_valid = DS_valid
 
-        self.name = '{}_{}_x{}'.format(self.name, paras.sr_generator, paras.sr_scale)
+        self.name = '{}_{}'.format(self.name, paras.seg_model)
 
         # segmentation models
         valid_methods = ['UNet', 'DLV3+']

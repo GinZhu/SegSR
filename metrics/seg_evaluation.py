@@ -1,4 +1,6 @@
 from metrics.basic_evaluation import BasicEvaluation
+from tabulate import tabulate
+import numpy as np
 
 """
 Todo: 
@@ -33,9 +35,9 @@ class SegmentationEvaluation(BasicEvaluation):
     def __call__(self, pred_label, sample):
         """
 
-        :param pred_label: N x H x W, tensor int
-        :param sample: {'gt': tensor int N x H x W}
-        :return:
+        :param pred_label: N x H x W or H x W, tensor int
+        :param sample: {'gt': tensor int N x H x W or H x W}
+        :return: {'id': , 'imgs': [pred_label, gt_label], 'dice_x': ,}
         """
         gt_label = sample['gt']
         report = {'imgs': [pred_label, gt_label]}
@@ -60,7 +62,22 @@ class SegmentationEvaluation(BasicEvaluation):
         return (2*(gt * pred).sum() + eps) / (gt.sum() + pred.sum() + eps)
 
     def print(self, report):
-        pass
+        table = []
+        row = ['Seg', ]
+        for m in self.metrics:
+            v = report[m]
+            if isinstance(v, (float, int)):
+                row += ['{:.4}'.format(v)]
+            else:
+                if isinstance(v, list) and isinstance(v[0], list):
+                    v = np.concatenate(v)
+                mean_v = np.mean(v)
+                std_v = np.std(v)
+                row += ['{:.4}({:.2})'.format(mean_v, std_v)]
+        table.append(row)
+        headers = ['Seg', ] + self.metrics
+        plog = tabulate(table, headers=headers)
+        return plog
 
     def save(self, reports, folder, prefix):
         pass

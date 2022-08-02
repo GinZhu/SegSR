@@ -1,5 +1,6 @@
 from datasets.basic_dataset import MIBasicTrain, MIBasicValid
 from datasets.basic_dataset import SRImagePairRandomCrop, SingleImageRandomCrop
+from metrics.seg_evaluation import SegmentationEvaluation
 
 import numpy as np
 import nibabel as nib
@@ -262,8 +263,8 @@ class OASISSegDataset(OASISRawDataset):
         # ## if necessary, add data augmentation here
 
         # ## eva function
-        self.quick_eva_func = None
-        self.final_eva_func = None
+        self.quick_eva_func = SegmentationEvaluation(self.seg_classes)
+        self.final_eva_func = SegmentationEvaluation(self.seg_classes)
 
     def __getitem__(self, item):
         img_input = self.training_imgs[item]
