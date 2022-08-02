@@ -13,10 +13,10 @@ Stage II Trainer:
 """
 
 
-class SRTrainer(BasicTrainer):
+class SegTrainer(BasicTrainer):
 
     def __init__(self, paras, DS_train, DS_valid):
-        super(SRTrainer, self).__init__(paras)
+        super(SegTrainer, self).__init__(paras)
 
         # data
         self.DS_train = DS_train
@@ -35,9 +35,8 @@ class SRTrainer(BasicTrainer):
             self.model_g = smp.DeepLabV3Plus(in_channels=in_channels, classes=classes).to(self.device)
         else:
             raise ValueError(
-                'Invalid SR generator {}, supports {}'.format(paras.sr_generator, valid_methods)
+                'Invalid Segmentation model {}, supports {}'.format(paras.seg_model, valid_methods)
             )
-
 
         # optimizers
         self.module_names.append('optimizer_g')
@@ -127,7 +126,7 @@ class SRTrainer(BasicTrainer):
                 self.training_epoch_costs.append(epoch_time_cost)
 
                 if i % self.check_every == 0 or i == epochs:
-                    self.quick_eva(save_imgs=True)
+                    self.quick_eva(save_imgs=False)
                     self.save_checkpoint()
                     plog = 'Training stage {} Epoch {} - {}, mean losses:\n'.format(
                         ts, i - len(temp_loss_reports), i
@@ -159,8 +158,11 @@ class SRTrainer(BasicTrainer):
         with torch.no_grad():
             pred_segmentation = self.model_g(img)[0]
         pred_segmentation = self.tensor_2_numpy(pred_segmentation)
-        # pred is one hot like C x H x W
+        # pred is one hot like C x H x W, convert it to 1 x H x W
+        pred_segmentation = torch.argmax(pred_segmentation, dim=0).unsqueeze(0)
 
+        # tensor to numpy H x W x 1
+        pred_segmentation = self.tensor_2_numpy(pred_segmentation)
 
         return pred_segmentation
 

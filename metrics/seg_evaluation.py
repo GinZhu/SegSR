@@ -35,8 +35,8 @@ class SegmentationEvaluation(BasicEvaluation):
     def __call__(self, pred_label, sample):
         """
 
-        :param pred_label: N x H x W or H x W, tensor int
-        :param sample: {'gt': tensor int N x H x W or H x W}
+        :param pred_label: H x W x 1, tensor int
+        :param sample: {'gt': tensor int H x W x 1}
         :return: {'id': , 'imgs': [pred_label, gt_label], 'dice_x': ,}
         """
         gt_label = sample['gt']
