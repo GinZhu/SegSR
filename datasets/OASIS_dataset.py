@@ -216,6 +216,9 @@ class OASISSegDataset(OASISRawDataset):
         plt.imshow(hr[:, :, 0])
         plt.show()
         print(lr.max(), lr.min(), hr.max(), hr.min())
+
+        # get batch for training
+
     """
 
     def __init__(self, data_folder, training_patient_ids, validation_patient_ids, medical_image_dim=2,
