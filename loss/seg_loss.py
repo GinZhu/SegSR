@@ -58,3 +58,6 @@ class SMPLoss(object):
     def __call__(self, pred, gt):
         loss = self.function(pred, gt)
         return loss, {self.loss_names[0]: loss.item()}
+
+    def apply(self, fn):
+        pass
