@@ -251,9 +251,9 @@ class SRImagePairRandomCrop(BasicCropTransform):
         in_img, out_img = data
         if self.size is None:
             cropped_data = [
-                in_img[self.margin[0]:-self.margin[0], self.margin[1]:-self.margin[1]],
-                out_img[self.margin[0]*self.sr_factor:-self.margin[0]*self.sr_factor,
-                        self.margin[1]*self.sr_factor:-self.margin[1]*self.sr_factor]
+                in_img[self.margin[0]:in_img.shape[0]-self.margin[0], self.margin[1]:in_img.shape[1]-self.margin[1]],
+                out_img[self.margin[0]*self.sr_factor:(in_img.shape[0]-self.margin[0])*self.sr_factor,
+                        self.margin[1]*self.sr_factor:(in_img.shape[1]-self.margin[1])*self.sr_factor]
             ]
         else:
             ori_H, ori_W = in_img.shape[:2]

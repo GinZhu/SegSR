@@ -219,7 +219,7 @@ class OASISSegDataset(OASISRawDataset):
     """
 
     def __init__(self, data_folder, training_patient_ids, validation_patient_ids, medical_image_dim=2,
-                 margin=[14, 16], toy_problem=True, multi_threads=8, patch_size=96):
+                 margin=[14, 16], toy_problem=True, multi_threads=8, patch_size=0):
 
         super(OASISSegDataset, self).__init__(
             data_folder=data_folder, training_patient_ids=training_patient_ids,
