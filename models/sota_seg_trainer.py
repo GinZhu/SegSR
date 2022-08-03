@@ -157,7 +157,6 @@ class SegTrainer(BasicTrainer):
         self.model_g.eval()
         with torch.no_grad():
             pred_segmentation = self.model_g(img)[0]
-        pred_segmentation = self.tensor_2_numpy(pred_segmentation)
         # pred is one hot like C x H x W, convert it to 1 x H x W
         pred_segmentation = torch.argmax(pred_segmentation, dim=0).unsqueeze(0)
 
