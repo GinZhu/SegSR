@@ -24,7 +24,7 @@ class SegLoss(BasicLoss):
         """
         if gt.dim() is 4:   # N x 1 x H x W
             gt = gt[:, 0]   # N x H x W
-        gt = gt.type(torch.int)
+        gt = gt.type(torch.int64)
         repo = {}
         scalars = self.training_loss_scalars[self.current_training_state]
         loss = 0.
