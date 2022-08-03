@@ -96,5 +96,6 @@ class SegmentationEvaluation(BasicEvaluation):
         for r, s in zip(rec_imgs, samples):
             imgs.append(r)
             imgs.append(s['gt'])
+        imgs = [_/len(self.metrics) for _ in imgs]
         return {'Pred+GT': imgs}
 
