@@ -126,7 +126,7 @@ class SegTrainer(BasicTrainer):
                 self.training_epoch_costs.append(epoch_time_cost)
 
                 if i % self.check_every == 0 or i == epochs:
-                    self.quick_eva(save_imgs=False)
+                    self.quick_eva(save_imgs=True)
                     self.save_checkpoint()
                     plog = 'Training stage {} Epoch {} - {}, mean losses:\n'.format(
                         ts, i - len(temp_loss_reports), i

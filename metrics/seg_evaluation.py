@@ -86,5 +86,15 @@ class SegmentationEvaluation(BasicEvaluation):
     def save(self, reports, folder, prefix):
         pass
 
-    def display_images(self, rec_img, sample):
-        pass
+    def display_images(self, rec_imgs, samples):
+        if isinstance(samples, dict):
+            samples = [samples]
+            rec_imgs = [rec_imgs]
+        assert len(rec_imgs) == len(samples), 'Numbers of rec_imgs and samples should match'
+
+        imgs = []
+        for r, s in zip(rec_imgs, samples):
+            imgs.append(r)
+            imgs.append(s['gt'])
+        return {'Pred+GT': imgs}
+
