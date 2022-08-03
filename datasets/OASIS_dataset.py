@@ -290,7 +290,7 @@ class OASISSegDataset(OASISRawDataset):
 
 class OASISSegTestSinglePatientDataset(MIBasicValid):
 
-    def __init__(self, data_folder, patient_id):
+    def __init__(self, data_folder, patient_id, gt_folder):
         super(OASISSegTestSinglePatientDataset, self).__init__()
         self.pid = patient_id
         # load SR results
@@ -303,10 +303,11 @@ class OASISSegTestSinglePatientDataset(MIBasicValid):
         self.testing_imgs = imgs
         self.testing_img_ids = [patient_id, ] * len(self.testing_imgs)
         # load GT labels
-        
+        gt_data = np.load(join(gt_folder, '{}_gt.npz'.format(patient_id)))
+        self.testing_gts = gt_data[gt_data.files[0]]
 
     def test_len(self):
-        pass
+        return len(self.testing_imgs)
 
     def get_test_pair(self, item):
         img_input = self.testing_imgs[item]

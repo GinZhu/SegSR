@@ -43,4 +43,7 @@ for pid in testing_patient_ids:
     print('GT Segmentation label of {} is saved to {}'.format(
         pid, join(output_dir, '{}_gt.npz'.format(pid))
     ))
+    # images
+    images = ds.training_imgs
+    np.savez(join(output_dir, '{}_hrimg.npz'.format(pid)), images)
 
