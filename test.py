@@ -1,5 +1,5 @@
 from utils.param_loader import ParametersLoader
-from models.meta_sr_tester import MetaSRTester
+from models.sota_seg_tester import SegTester
 import argparse
 
 """
@@ -25,6 +25,7 @@ if gpu_id is not None:
     paras.gpu_id = gpu_id
     paras.eva_gpu_id = gpu_id
 
+tester = SegTester(paras)
 
 tester.setup()
 tester.test()

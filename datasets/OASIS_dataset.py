@@ -290,17 +290,21 @@ class OASISSegDataset(OASISRawDataset):
 
 class OASISSegTestSinglePatientDataset(MIBasicValid):
 
-    def __init__(self, data_folder, patient_id, gt_folder):
+    def __init__(self, data_folder, patient_id, gt_folder, gt_imgs=False):
         super(OASISSegTestSinglePatientDataset, self).__init__()
         self.pid = patient_id
-        # load SR results
-        data_path = join(data_folder, 'inferences', '{}_inference_results.tar'.format(patient_id))
-        rec_imgs = torch.load(data_path)['rec_imgs']
-        imgs = []
-        for img in rec_imgs:
-            for sr in img:
-                imgs.append(img[sr])
-        self.testing_imgs = imgs
+        if gt_imgs:
+            gt_imgs_data = np.load(join(gt_folder, '{}_hrimg.npz'.format(patient_id)))
+            self.testing_imgs = gt_imgs_data[gt_imgs_data.files[0]]
+        else:
+            # load SR results
+            data_path = join(data_folder, 'inferences', '{}_inference_results.tar'.format(patient_id))
+            rec_imgs = torch.load(data_path)['rec_imgs']
+            imgs = []
+            for img in rec_imgs:
+                for sr in img:
+                    imgs.append(img[sr])
+            self.testing_imgs = imgs
         self.testing_img_ids = [patient_id, ] * len(self.testing_imgs)
         # load GT labels
         gt_data = np.load(join(gt_folder, '{}_gt.npz'.format(patient_id)))
