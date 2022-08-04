@@ -56,6 +56,8 @@ class SegTester(BasicTester):
         self.seg_model.eval()
         with torch.no_grad():
             pred_segmentation = self.seg_model(img)[0]
+        # one-hot to map
+        pred_segmentation = torch.argmax(pred_segmentation, dim=0).unsqueeze(0)
 
         # tensor to numpy H x W x 1
         pred_segmentation = self.tensor_2_numpy(pred_segmentation)
