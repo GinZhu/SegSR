@@ -29,7 +29,7 @@ class SegmentationEvaluation(BasicEvaluation):
                 'dice',
             ]
         else:
-            self.num_classes = len(classes)
+            self.num_classes = len(classes) + 1
             self.metrics = [
                 'dice_{}'.format(_) for _ in classes
             ]
