@@ -21,18 +21,8 @@ def tensor_2_numpy(t):
         return t.detach().cpu().numpy()
 
 
-def validation(paras, eva_func, model):
+def validation(device, eva_func, model, ds):
     # ## validation data folder
-    data_folder = paras.data_folder
-    toy_problem = paras.toy_problem
-    medical_image_dim = paras.medical_image_dim_oasis
-    training_patient_ids = paras.training_patient_ids_oasis
-    validation_patient_ids = paras.validation_patient_ids_oasis
-    margin = paras.margin_oasis
-    multi_threads = paras.multi_threads
-
-    ds = OASISSegDataset(data_folder, training_patient_ids, validation_patient_ids, medical_image_dim,
-                         margin, toy_problem, multi_threads, patch_size=0)
 
     # ## evaluation
     sample_ids = list(range(ds.test_len()))
@@ -65,19 +55,13 @@ device = torch.device('cuda:{}'.format(paras.gpu_id))
 target_classes = paras.target_classes
 in_channels = paras.input_channel
 classes = paras.rst_classes
-# model = smp.Unet(in_channels=in_channels, classes=classes).to(device)
-# ptm_path = paras.well_trained_seg_model
-# ptm = torch.load(ptm_path, map_location=device)
+model = smp.Unet(in_channels=in_channels, classes=classes).to(device)
+ptm_path = paras.well_trained_seg_model
+ptm = torch.load(ptm_path, map_location=device)
 
 # evaluation
 eva_func = SegmentationEvaluation(classes=target_classes)
 
-# print('Raw model results with validaiton dataset: ')
-# validation(paras, eva_func)
-#
-# print('Trained model results with validation dataset: ')
-# model.load_state_dict(ptm)
-# validation(paras, eva_func)
 
 # ## compare the data from validation dataset and testing dataset
 # validation dataset:
@@ -98,7 +82,34 @@ pid = testing_patient_ids[0]
 ds_t = OASISSegTestSinglePatientDataset(data_folder, pid, paras.gt_folder, gt_imgs=paras.gt_imgs)
 print('Test Length: ', ds.test_len(), ds_t.test_len())
 
+for i in range(ds_t.test_len()):
+    vs = ds.get_test_pair(i)
+    # print('id:', vs['id'], ts['id'])
+    ts = ds_t.get_test_pair(i)
+    # print('keys:', vs.keys(), ts.keys())
+    vin = vs['in']
+    tin = ts['in']
+    vin_log = 'in {} {} {} {} {}'.format(vin.shape, vin.dtype, vin.max(), vin.min(), vin.mean())
+    tin_log = 'in {} {} {} {} {}'.format( tin.shape, tin.dtype, tin.max(), tin.min(), tin.mean())
+    vgt = vs['gt']
+    tgt = ts['gt']
+    vgt_log = 'gt {} {} {} {} {}'.format(vgt.shape, vgt.dtype, vgt.max(), vgt.min(), vgt.mean())
+    tgt_log = 'gt {} {} {} {} {}'.format(tgt.shape, tgt.dtype, tgt.max(), tgt.min(), tgt.mean())
+    if vin_log != tin_log or vgt_log != tgt_log:
+        print(i, vs['id'], ts['id'])
+        print(vin_log)
+        print(tin_log)
+        print(vgt_log)
+        print(tgt_log)
+        break
 
-
+# print('Raw model results with validaiton dataset: ')
+validation(device, eva_func, ds)
+validation(device, eva_func, ds_t)
+#
+# print('Trained model results with validation dataset: ')
+model.load_state_dict(ptm)
+validation(device, eva_func, ds)
+validation(device, eva_func, ds_t)
 
 
