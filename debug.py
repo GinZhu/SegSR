@@ -21,7 +21,7 @@ def tensor_2_numpy(t):
         return t.detach().cpu().numpy()
 
 
-def validation(paras, eva_func):
+def validation(paras, eva_func, model):
     # ## validation data folder
     data_folder = paras.data_folder
     toy_problem = paras.toy_problem
@@ -65,19 +65,39 @@ device = torch.device('cuda:{}'.format(paras.gpu_id))
 target_classes = paras.target_classes
 in_channels = paras.input_channel
 classes = paras.rst_classes
-model = smp.Unet(in_channels=in_channels, classes=classes).to(device)
-ptm_path = paras.well_trained_seg_model
-ptm = torch.load(ptm_path, map_location=device)
+# model = smp.Unet(in_channels=in_channels, classes=classes).to(device)
+# ptm_path = paras.well_trained_seg_model
+# ptm = torch.load(ptm_path, map_location=device)
 
 # evaluation
 eva_func = SegmentationEvaluation(classes=target_classes)
 
-print('Raw model results with validaiton dataset: ')
-validation(paras, eva_func)
+# print('Raw model results with validaiton dataset: ')
+# validation(paras, eva_func)
+#
+# print('Trained model results with validation dataset: ')
+# model.load_state_dict(ptm)
+# validation(paras, eva_func)
 
-print('Trained model results with validation dataset: ')
-model.load_state_dict(ptm)
-validation(paras, eva_func)
+# ## compare the data from validation dataset and testing dataset
+# validation dataset:
+data_folder = paras.data_folder
+toy_problem = paras.toy_problem
+medical_image_dim = paras.medical_image_dim_oasis
+training_patient_ids = paras.training_patient_ids_oasis
+validation_patient_ids = paras.validation_patient_ids_oasis
+margin = paras.margin_oasis
+multi_threads = paras.multi_threads
+
+ds = OASISSegDataset(data_folder, training_patient_ids, validation_patient_ids, medical_image_dim,
+                     margin, toy_problem, multi_threads, patch_size=0)
+
+# testing dataset
+testing_patient_ids = paras.testing_patient_ids_oasis
+pid = testing_patient_ids[0]
+ds_t = OASISSegTestSinglePatientDataset(data_folder, pid, paras.gt_folder, gt_imgs=paras.gt_imgs)
+print('Test Length: ', ds.test_len(), ds_t.test_len())
+
 
 
 
