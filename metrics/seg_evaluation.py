@@ -1,6 +1,8 @@
 from metrics.basic_evaluation import BasicEvaluation
 from tabulate import tabulate
 import numpy as np
+import torch
+import torch.nn.functional as F
 
 """
 Todo: 
@@ -31,6 +33,7 @@ class SegmentationEvaluation(BasicEvaluation):
             self.metrics = [
                 'dice_{}'.format(_) for _ in classes
             ]
+            self.metrics.append('dice_total')
 
     def __call__(self, pred_labels, samples):
         """
@@ -45,10 +48,20 @@ class SegmentationEvaluation(BasicEvaluation):
         for pred_label, sample in zip(pred_labels, samples):
             gt_label = sample['gt']
             for l, m in enumerate(self.metrics, 1):
-                gt = gt_label == l
-                pred = pred_label == l
-                dice = self.dice_coef(gt, pred)
-                reports[m].append(dice)
+                if m is 'dice_total':
+                    gtt = torch.from_numpy(gt_label)
+                    gtt_one_hot = F.one_hot(gtt.to(torch.long), self.num_classes)
+                    gt_np = gtt_one_hot.numpy()
+                    pred_torch = torch.from_numpy(pred_label)
+                    pred_torch_one_hot = F.one_hot(pred_torch.to(torch.long), self.num_classes)
+                    pred_np = pred_torch_one_hot.numpy()
+                    dice = self.dice_coef(gt_np, pred_np)
+                    reports[m].append(dice)
+                else:
+                    gt = gt_label == l
+                    pred = pred_label == l
+                    dice = self.dice_coef(gt, pred)
+                    reports[m].append(dice)
         for m in reports:
             reports[m] = np.mean(reports[m])
         return reports
