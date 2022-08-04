@@ -104,12 +104,12 @@ for i in range(ds_t.test_len()):
         break
 
 # print('Raw model results with validaiton dataset: ')
-validation(device, eva_func, ds)
-validation(device, eva_func, ds_t)
+validation(device, eva_func, model, ds)
+validation(device, eva_func, model, ds_t)
 #
 # print('Trained model results with validation dataset: ')
 model.load_state_dict(ptm)
-validation(device, eva_func, ds)
-validation(device, eva_func, ds_t)
+validation(device, eva_func, model, ds)
+validation(device, eva_func, model, ds_t)
 
 
