@@ -30,7 +30,7 @@ class SegTester(BasicTester):
         classes = paras.rst_classes
 
         self.trained_model_mode = paras.trained_model_mode
-        self.model_names.append(self.trained_model_mode)
+        self.model_names.append('seg_model')
         if self.trained_model_mode is 'UNet':
             self.seg_model = smp.Unet(in_channels=in_channels, classes=classes).to(self.device)
             self.ptm_paths['seg_model'] = paras.well_trained_seg_model
