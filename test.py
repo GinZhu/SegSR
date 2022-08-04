@@ -4,7 +4,7 @@ import argparse
 
 """
 Example:
-    python -W ignore test.py --config-file config_files/colab_meta_seg_example.ini
+    python -W ignore test.py --config-file 
 """
 
 
