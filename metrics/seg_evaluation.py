@@ -59,8 +59,8 @@ class SegmentationEvaluation(BasicEvaluation):
                     if 'total' in m:
                         dice = self.dice_coef(gt_np, pred_np)
                     elif 'foreground' in m:
-                        assert gt_np.ndim == 3, 'GT_NP dim is {}'.format(gt_np.ndim)
-                        dice = self.dice_coef(gt_np[:, :, 1:], pred_np[:, :, 1:])
+                        assert gt_np.ndim == 4, 'GT_NP dim is {}'.format(gt_np.ndim)
+                        dice = self.dice_coef(gt_np[:, :, :, 1:], pred_np[:, :, :, 1:])
                     reports[m].append(dice)
                 else:
                     gt = gt_label == l
