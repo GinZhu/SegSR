@@ -230,18 +230,18 @@ class BraTSSegDataset(BraTSReader, MIBasicTrain, MIBasicValid):
 
 
 
-# test
-from datasets.BraTS_dataset import BraTSSegDataset
-config_file = 'config_files/dev_unet_seg_brats.ini'
-from utils.param_loader import ParametersLoader
-paras = ParametersLoader(config_file)
-ds_train = BraTSSegDataset(paras)
-sample = ds_train.__getitem__(50)
-
-print('ds', ds_train.__len__(), ds_train.hr_images[0].shape, ds_train.gt_labels[0].shape)
-
-img = sample['in']
-print('in', img.shape, img.dtype, img.min(), img.max(), img.mean())
-label = sample['out']
-print('label', label.shape, label.dtype, label.min(), label.max(), label.mean())
+# # test
+# from datasets.BraTS_dataset import BraTSSegDataset
+# config_file = 'config_files/dev_unet_seg_brats.ini'
+# from utils.param_loader import ParametersLoader
+# paras = ParametersLoader(config_file)
+# ds_train = BraTSSegDataset(paras)
+# sample = ds_train.__getitem__(50)
+#
+# print('ds', ds_train.__len__(), ds_train.hr_images[0].shape, ds_train.gt_labels[0].shape)
+#
+# img = sample['in']
+# print('in', img.shape, img.dtype, img.min(), img.max(), img.mean())
+# label = sample['out']
+# print('label', label.shape, label.dtype, label.min(), label.max(), label.mean())
 
