@@ -99,8 +99,25 @@ class BraTSReader(MIBasicTrain):
         self.gt_labels = self.multi_pool.map(self.remove_margin, self.gt_labels)
 
     def load_data(self, pid):
-        """Load image data and label data."""
+        """
+        Load image data and label data.
+        Slices are selected based on the segmentation labels, not slices.
+        To ensure that every slices contain tumour pixels > 100
+        """
         p_folder, p_name = self.encode_pid(pid)
+
+        # label first to get mask
+        # label
+        label_path = join(p_folder, '{}_{}.nii.gz'.format(p_name, 'seg'))
+        label_data = nib.load(label_path).get_fdata()
+        label_data = np.swapaxes(label_data, 0, self.dim)
+        label_data, mask = self.select_slice(label_data, threshold=100)
+        self.masks[pid] = mask
+
+        # convert label == 3 to label=4
+        label_data[label_data == 4] = 3
+        label_data = np.expand_dims(label_data, axis=-1)
+
         pid_data = []
         pid_data_ranges = []
         for m in self.modalities:
@@ -118,15 +135,6 @@ class BraTSReader(MIBasicTrain):
         pid_data = np.stack(pid_data, axis=-1)
         self.norm_paras[pid] = pid_data_ranges
 
-        # label
-        label_path = join(p_folder, '{}_{}.nii.gz'.format(p_name, 'seg'))
-        label_data = nib.load(label_path).get_fdata()
-        label_data = np.swapaxes(label_data, 0, self.dim)
-        label_data, mask = self.select_slice(label_data, mask=self.masks[pid])
-
-        # convert label == 3 to label=4
-        label_data[label_data==4] = 3
-
         return pid_data, label_data
 
     def encode_pid(self, pid):
@@ -136,13 +144,13 @@ class BraTSReader(MIBasicTrain):
         return p_folder, pid
 
     @staticmethod
-    def select_slice(imgs, mask=None):
+    def select_slice(imgs, mask=None, threshold=100):
         # ## get brain slices only
         if mask is None:
             if imgs.ndim == 4:
-                mask = np.sum(imgs, axis=(1, 2, 3)) > 0
+                mask = np.sum(imgs, axis=(1, 2, 3)) > threshold
             elif imgs.ndim == 3:
-                mask = np.sum(imgs, axis=(1, 2)) > 0
+                mask = np.sum(imgs, axis=(1, 2)) > threshold
         selected_imgs = imgs[mask]
 
         return selected_imgs, mask
@@ -222,5 +230,18 @@ class BraTSSegDataset(BraTSReader, MIBasicTrain, MIBasicValid):
 
 
 
+# test
+from datasets.BraTS_dataset import BraTSSegDataset
+config_file = 'config_files/dev_unet_seg_brats.ini'
+from utils.param_loader import ParametersLoader
+paras = ParametersLoader(config_file)
+ds_train = BraTSSegDataset(paras)
+sample = ds_train.__getitem__(50)
 
+print('ds', ds_train.__len__(), ds_train.hr_images[0].shape, ds_train.gt_labels[0].shape)
+
+img = sample['in']
+print('in', img.shape, img.dtype, img.min(), img.max(), img.mean())
+label = sample['out']
+print('label', label.shape, label.dtype, label.min(), label.max(), label.mean())
 
