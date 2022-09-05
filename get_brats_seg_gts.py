@@ -1,20 +1,8 @@
-# from datasets.OASIS_dataset import OASISSegDataset
 from datasets.BraTS_dataset import BraTSSegDataset
 from utils.param_loader import ParametersLoader
-import argparse
 from os.path import isdir, join
 from os import makedirs
 import numpy as np
-import nibabel as nib
-from glob import glob
-
-
-# parser = argparse.ArgumentParser(description='Parameters')
-# parser.add_argument('--c', type=str, required=True, metavar='CONFIG',
-#                     help='Path to config file.')
-# parser.add_argument('--o', type=str, required=True, metavar='OUTPUT',
-#                     help='where to save the gts')
-
 
 config_file = 'config_files/dev_unet_seg_brats.ini'
 
@@ -84,7 +72,7 @@ paras = ParametersLoader(config_file)
 testing_patient_ids = paras.testing_patient_ids_brats
 
 for pid in testing_patient_ids:
-    ds = BraTSSegDataset(paras, patient_ids=pid)
+    ds = BraTSSegDataset(paras, patient_ids=[pid])
     labels = ds.gt_labels
 
     np.savez(join(output_dir, '{}_gt.npz'.format(pid)), labels)
