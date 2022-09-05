@@ -9,18 +9,22 @@ import nibabel as nib
 from glob import glob
 
 
-parser = argparse.ArgumentParser(description='Parameters')
-parser.add_argument('--config-file', type=str, required=True, metavar='CONFIG',
-                    help='Path to config file.')
-parser.add_argument('--output-dir', type=str, required=True, metavar='OUTPUT',
-                    help='where to save the gts')
+# parser = argparse.ArgumentParser(description='Parameters')
+# parser.add_argument('--c', type=str, required=True, metavar='CONFIG',
+#                     help='Path to config file.')
+# parser.add_argument('--o', type=str, required=True, metavar='OUTPUT',
+#                     help='where to save the gts')
 
-args = parser.parse_args()
-# do distributed training here
-config_file = args.config_file
+
+config_file = 'config_files/dev_unet_seg_brats.ini'
+
+# args = parser.parse_args()
+# # do distributed training here
+# config_file = args.config_file
 
 # save the gts
-output_dir = args.output_dir
+output_dir = '/local/scratch/jz426/TransSR/Segmentation/BraTS_Testing_GTs'
+# output_dir = args.output_dir
 if not isdir(output_dir):
     makedirs(output_dir)
 
