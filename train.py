@@ -1,6 +1,7 @@
 from utils.param_loader import ParametersLoader
 from models.sota_seg_trainer import SegTrainer
 from datasets.OASIS_dataset import OASISSegDataset
+from datasets.BraTS_dataset import BraTSSegDataset
 import argparse
 
 """
@@ -36,15 +37,19 @@ if 'OASIS' in data_folder:
     margin = paras.margin_oasis
     multi_threads = paras.multi_threads
 
-    ds = OASISSegDataset(data_folder, training_patient_ids, validation_patient_ids, medical_image_dim,
+    ds_train = OASISSegDataset(data_folder, training_patient_ids, validation_patient_ids, medical_image_dim,
                       margin, toy_problem, multi_threads, patch_size=0)
+    ds_valid = ds_train
+elif 'BraTS' in data_folder:
+    ds_train = BraTSSegDataset(paras)
+    ds_valid = BraTSSegDataset(paras, paras.validation_patient_ids_brats)
 else:
     raise ValueError('Only support data: [OASIS, BraTS, ACDC, COVID]')
 
-print('DS info:', len(ds), 'training samples, and', ds.test_len(), 'testing cases.')
+print('DS info:', len(ds_train), 'training samples, and', ds_valid.test_len(), 'testing cases.')
 
 # ## training
-trainer = SegTrainer(paras, ds, ds)
+trainer = SegTrainer(paras, ds_train, ds_valid)
 trainer.setup()
 trainer.train()
 
