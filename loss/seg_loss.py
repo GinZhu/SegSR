@@ -9,7 +9,7 @@ class SegLoss(BasicLoss):
         super(SegLoss, self).__init__(paras)
 
         mode = paras.seg_loss_mode
-        classes = paras.rst_classes
+        classes = paras.dice_loss_classes
         for l in self.training_loss_names:
             f = SMPLoss(mode, l, classes)
             self.loss_components += f.loss_names
