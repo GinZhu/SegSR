@@ -64,6 +64,7 @@ class BraTSReader(MIBasicTrain):
         self.remove_margin = None
 
         # labels
+        self.hr_images = []
         self.gt_labels = []
 
     def loading(self):
