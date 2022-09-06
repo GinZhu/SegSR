@@ -4,8 +4,9 @@ import copy
 import numpy as np
 from os.path import join
 
-from metrics.seg_evaluation import SegmentationEvaluation
+from metrics.seg_evaluation import SegmentationEvaluation, BraTSSegEvaluation
 from datasets.OASIS_dataset import OASISSegTestSinglePatientDataset
+from datasets.BraTS_dataset import BraTSSegTestSinglePatientDataset
 
 import segmentation_models_pytorch as smp
 
@@ -35,19 +36,25 @@ class SegTester(BasicTester):
             self.seg_model = smp.Unet(in_channels=in_channels, classes=classes).to(self.device)
             self.ptm_paths['seg_model'] = paras.well_trained_seg_model
 
-        # evaluation
-        self.eva_func = SegmentationEvaluation(classes=self.target_classes)
-
         # testing data
-        valid_datasets = ['OASIS', ]
+        valid_datasets = ['OASIS', 'BraTS',]
         data_folder = self.paras.data_folder
         self.which_data = None
         if 'OASIS' in data_folder:
             self.testing_patient_ids = self.paras.testing_patient_ids_oasis
             self.which_data = 'OASIS'
+        elif 'BraTS' in data_folder:
+            self.testing_patient_ids = self.paras.testing_patient_ids_brats
+            self.which_data = 'BraTS'
         else:
             # add more
             raise ValueError('Invalid data, {}, only support {}'.format(data_folder, valid_datasets))
+
+        # evaluation
+        if self.which_data in ['BraTS']:
+            self.eva_func = BraTSSegEvaluation()
+        else:
+            self.eva_func = SegmentationEvaluation(classes=self.target_classes)
 
     def __inference_one__(self, sample):
 
@@ -78,6 +85,10 @@ class SegTester(BasicTester):
 
             if self.which_data == 'OASIS':
                 DS = OASISSegTestSinglePatientDataset(
+                    self.paras.data_folder, pid, self.paras.gt_folder, gt_imgs=self.paras.gt_imgs
+                )
+            elif self.which_data == 'BraTS':
+                DS = BraTSSegTestSinglePatientDataset(
                     self.paras.data_folder, pid, self.paras.gt_folder, gt_imgs=self.paras.gt_imgs
                 )
             else:

@@ -11,7 +11,7 @@ config_file = 'config_files/dev_unet_seg_brats.ini'
 # config_file = args.config_file
 
 # save the gts
-output_dir = '/local/scratch/jz426/TransSR/Segmentation/BraTS_Testing_GTs'
+output_dir = '/local/scratch/jz426/TransSR/Segmentation/BraTS_Seg_GTs'
 # output_dir = args.output_dir
 if not isdir(output_dir):
     makedirs(output_dir)

@@ -117,3 +117,39 @@ class SegmentationEvaluation(BasicEvaluation):
         imgs = [_/len(self.metrics) for _ in imgs]
         return {'Pred+GT': imgs}
 
+
+class BraTSSegEvaluation(SegmentationEvaluation):
+
+    def __init__(self, classes=None):
+        classes = ['ET', 'TC', 'WT']
+        self.num_classes = 4
+        self.metrics = ['dice_{}'.format(_) for _ in classes]
+
+    def __call__(self, pred_labels, samples):
+        reports = {}
+        for m in self.metrics:
+            reports[m] = []
+        for pred_label, sample in zip(pred_labels, samples):
+            gt_label = sample['gt']
+            for m in self.metrics:
+                if 'ET' in m:
+                    gt = gt_label == 3
+                    pred = pred_label == 3
+                    dice = self.dice_coef(gt, pred)
+                    reports[m].append(dice)
+                elif 'TC' in m:
+                    gt = (gt_label == 1) + (gt_label == 3)
+                    pred = (pred_label == 1) + (pred_label == 3)
+                    dice = self.dice_coef(gt, pred)
+                    reports[m].append(dice)
+                elif 'WT' in m:
+                    gt = (gt_label == 1) + (gt_label == 2) + (gt_label == 3)
+                    pred = (pred_label == 1) + (pred_label == 2) + (pred_label == 3)
+                    dice = self.dice_coef(gt, pred)
+                    reports[m].append(dice)
+        for m in reports:
+            reports[m] = np.mean(reports[m])
+        return reports
+
+
+

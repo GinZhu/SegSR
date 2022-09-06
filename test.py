@@ -27,7 +27,10 @@ paras = ParametersLoader(config_file)
 data_folder = args.folder
 if data_folder is not None:
     paras.data_folder = '/'.join(paras.data_folder.split('/')[:-1] + [data_folder])
-    paras.model_name = 'OASIS_Segmentation_{}'.format(data_folder.replace('FT_SR_OASIS_', ''))
+    if 'OASIS' in data_folder:
+        paras.model_name = 'OASIS_Segmentation_{}'.format(data_folder.replace('FT_SR_OASIS_', ''))
+    elif 'BraTS' in data_folder:
+        paras.model_name = 'BraTS_Segmentation_{}'.format(data_folder.replace('FT_SR_BraTS_', ''))
 
 if gpu_id is not None:
     paras.gpu_id = gpu_id
