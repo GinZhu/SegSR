@@ -8,6 +8,7 @@ from metrics.seg_evaluation import SegmentationEvaluation, BraTSSegEvaluation
 from datasets.OASIS_dataset import OASISSegTestSinglePatientDataset
 from datasets.BraTS_dataset import BraTSSegTestSinglePatientDataset
 from datasets.ACDC_dataset import ACDCSegTestSinglePatientDataset
+from datasets.CovidCT_dataset import CovidCTSegTestSinglePatientDataset
 
 import segmentation_models_pytorch as smp
 
@@ -50,6 +51,9 @@ class SegTester(BasicTester):
         elif 'ACDC' in data_folder:
             self.testing_patient_ids = self.paras.testing_patient_ids_acdc
             self.which_data = 'ACDC'
+        elif 'COVID' in data_folder:
+            self.testing_patient_ids = self.paras.testing_patient_ids_covid
+            self.which_data = 'COVID'
         else:
             # add more
             raise ValueError('Invalid data, {}, only support {}'.format(data_folder, valid_datasets))
@@ -97,6 +101,10 @@ class SegTester(BasicTester):
                 )
             elif self.which_data == 'ACDC':
                 DS = ACDCSegTestSinglePatientDataset(
+                    self.paras.data_folder, pid, self.paras.gt_folder, gt_imgs=self.paras.gt_imgs
+                )
+            elif self.which_data == 'COVID':
+                DS = CovidCTSegTestSinglePatientDataset(
                     self.paras.data_folder, pid, self.paras.gt_folder, gt_imgs=self.paras.gt_imgs
                 )
             else:
