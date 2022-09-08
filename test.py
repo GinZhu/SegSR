@@ -31,6 +31,8 @@ if data_folder is not None:
         paras.model_name = 'OASIS_Segmentation_{}'.format(data_folder.replace('FT_SR_OASIS_', ''))
     elif 'BraTS' in data_folder:
         paras.model_name = 'BraTS_Segmentation_{}'.format(data_folder.replace('FT_SR_BraTS_', ''))
+    elif 'ACDC' in data_folder:
+        paras.model_name = 'ACDC_Segmentation_{}'.format(data_folder.replace('FT_SR_ACDC_', ''))
 
 if gpu_id is not None:
     paras.gpu_id = gpu_id
