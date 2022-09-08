@@ -79,6 +79,7 @@ class ACDCReader(MedicalImageBasicDataset):
         self.norm_paras = {}
         self.img_ids = []
 
+        # labels
         self.hr_images = []
         self.gt_labels = []
 
@@ -173,6 +174,8 @@ class ACDCSegDataset(ACDCReader, MIBasicTrain):
         self.centre_crop_size = paras.crop_size_acdc
         
         self.norm = paras.normal_inputs
+
+        self.patch_size = 0
 
         self.loading()
 
