@@ -79,6 +79,7 @@ class ACDCReader(MedicalImageBasicDataset):
         self.norm_paras = {}
         self.img_ids = []
 
+        self.hr_images = []
         self.gt_labels = []
 
     def loading(self):
