@@ -153,12 +153,12 @@ class CovidCTSegDataset(CovidCTReader, MIBasicTrain, MIBasicValid):
 
         self.raw_data_folder = paras.data_folder
         self.toy_problem = paras.toy_problem
-        self.dim = paras.medical_image_dim_acdc
+        self.dim = paras.medical_image_dim_covid
         if patient_ids is not None:
             self.patient_ids = patient_ids
         else:
-            self.patient_ids = paras.training_patient_ids_acdc
-        self.centre_crop_size = paras.crop_size_acdc
+            self.patient_ids = paras.training_patient_ids_covid
+        self.centre_crop_size = paras.crop_size_covid
         
         self.norm = paras.normal_inputs
 
@@ -245,97 +245,4 @@ class CovidCTSegTestSinglePatientDataset(MIBasicValid):
 
         return {'in': img_input, 'gt': img_output, 'id': img_id}
 
-
-# class ACDCMultiSRTest(ACDCReader, BasicMultiSRTest):
-#
-#     def __init__(self, paras, patient_ids,):
-#         super(ACDCMultiSRTest, self).__init__()
-#
-#         self.raw_data_folder = paras.data_folder
-#         self.toy_problem = paras.toy_problem
-#         self.dim = paras.medical_image_dim_acdc
-#         self.patient_ids = patient_ids
-#         self.centre_crop_size = paras.crop_size_acdc
-#
-#         self.norm = paras.normal_inputs
-#
-#         self.loading()
-#
-#         # ## image shape
-#         self.input_channels = self.hr_images[0].shape[-1]
-#         self.hr_image_region = self.hr_images[0].shape[:2]
-#
-#         # ## patch cropping <- MultiSRDataset
-#         self.test_sr_scales = paras.test_sr_scales
-#         self.lr_patch_size = paras.patch_size
-#         self.lr_patch_stride = paras.test_lr_patch_stride
-#         self.return_res_image = paras.return_res_image
-#         # lr image size remain
-#         self.lr_image_size_remain = paras.lr_image_size_remain
-#
-#         # ## eva function
-#         quick_eva_metrics = paras.quick_eva_metrics
-#         final_eva_metrics = paras.eva_metrics
-#         eva_gpu = paras.eva_gpu_id
-#         self.quick_eva_func = MetaSREvaluation(quick_eva_metrics, self.test_sr_scales, eva_gpu, 'mean')
-#         self.final_eva_func = MetaSREvaluation(final_eva_metrics, self.test_sr_scales, eva_gpu, 'full')
-#
-#         # self.crop_func = CentreCrop(self.hr_image_region)
-#         self.crop_func = lambda x: x
-#
-#         # get image unfolder and folders
-#         if self.lr_image_size_remain:
-#             # calculate the lr image sizes
-#             H, W = self.hr_image_region
-#             lr_image_shape = (1, self.input_channels, H, W)
-#             img_folder = ImageFolder(
-#                 lr_image_shape, self.lr_patch_size, stride=self.lr_patch_stride
-#             )
-#             self.lr_unfolders = {0: img_folder.get_unfolder()}
-#             self.hr_folders = {0: img_folder.get_folder()}
-#             # return res image for following operation
-#             self.return_res_image = True
-#
-#         else:
-#             self.lr_unfolders = {}
-#             self.hr_folders = {}
-#             for s in self.test_sr_scales:
-#                 lr_h, lr_w = int(self.hr_image_region[0] / s), int(self.hr_image_region[1] / s)
-#                 lr_image_shape = (1, self.input_channels, lr_h, lr_w)
-#                 imf_lr = ImageFolder(lr_image_shape, self.lr_patch_size, stride=self.lr_patch_stride)
-#                 self.lr_unfolders[s] = imf_lr.get_unfolder()
-#                 imf_hr = ImageFolder(
-#                     (1, self.input_channels, self.hr_image_region[0], self.hr_image_region[1]),
-#                     int(self.lr_patch_size * s),
-#                     stride=int(self.lr_patch_stride * s)
-#                 )
-#                 self.hr_folders[s] = imf_hr.get_folder()
-#
-#     def get_test_pair(self, item):
-#         """
-#
-#         :param item:
-#         :return:
-#             'in': 1 x C x H x W (lr_size_remain=True) tensor
-#             'gt': H x W x C numpy array
-#             'res': 1 x C x H x W tensor
-#             'sr_factor': float
-#             'real_sr_scale': float
-#         """
-#         sample = super(ACDCMultiSRTest, self).get_test_pair(item)
-#         for s in sample:
-#             if self.lr_image_size_remain:
-#                 sample[s]['in'] = sample[s]['res']
-#
-#             sample[s]['real_sr_scale'] = sample[s]['real_sr_scale'][0]
-#         return sample
-#
-#     def post_processing(self, *args, **kwargs):
-#         pass
-#
-#     def pre_processing(self, *args, **kwargs):
-#         pass
-#
-#     def test_len(self):
-#         return len(self.hr_images)
 
