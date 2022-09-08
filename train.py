@@ -2,6 +2,7 @@ from utils.param_loader import ParametersLoader
 from models.sota_seg_trainer import SegTrainer
 from datasets.OASIS_dataset import OASISSegDataset
 from datasets.BraTS_dataset import BraTSSegDataset
+from datasets.ACDC_dataset import ACDCSegDataset
 import argparse
 
 """
@@ -43,6 +44,9 @@ if 'OASIS' in data_folder:
 elif 'BraTS' in data_folder:
     ds_train = BraTSSegDataset(paras)
     ds_valid = BraTSSegDataset(paras, paras.validation_patient_ids_brats)
+elif 'ACDC' in data_folder:
+    ds_train = ACDCSegDataset(paras)
+    ds_valid = ACDCSegDataset(paras, paras.validation_patient_ids_acdc)
 else:
     raise ValueError('Only support data: [OASIS, BraTS, ACDC, COVID]')
 
