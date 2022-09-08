@@ -44,7 +44,7 @@ Todo: @ Oct 23 2020
 """
 
 
-class ACDCReader(MedicalImageBasicDataset):
+class ACDCReader(MIBasicTrain):
     """
     Loading data from the OASIS dataset for training / validation
     Image data example information:
@@ -152,7 +152,7 @@ class ACDCReader(MedicalImageBasicDataset):
         return selected_imgs, mask
 
 
-class ACDCSegDataset(ACDCReader, MIBasicTrain):
+class ACDCSegDataset(ACDCReader, MIBasicTrain, MIBasicValid):
     """
     Behaviours:
         1. generate training patches in a batch;
