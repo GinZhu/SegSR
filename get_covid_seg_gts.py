@@ -1,4 +1,4 @@
-from datasets.ACDC_dataset import ACDCSegDataset
+from datasets.CovidCT_dataset import CovidCTSegDataset
 from utils.param_loader import ParametersLoader
 from os.path import isdir, join
 from os import makedirs
@@ -73,7 +73,7 @@ testing_patient_ids = paras.testing_patient_ids_covid
 
 total = 0
 for pid in testing_patient_ids:
-    ds = ACDCSegDataset(paras, patient_ids=[pid])
+    ds = CovidCTSegDataset(paras, patient_ids=[pid])
     labels = ds.gt_labels
 
     np.savez(join(output_dir, '{}_gt.npz'.format(pid)), labels)
