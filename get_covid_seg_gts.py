@@ -11,7 +11,7 @@ config_file = 'config_files/dev_unet_covid_123.ini'
 # config_file = args.config_file
 
 # save the gts
-output_dir = '/local/scratch/jz426/TransSR/Segmentation/COVID_CT_Seg_GTs'
+output_dir = '/local/scratch/jz426/TransSR/Segmentation/COVID_CT_Seg_GTs_training'
 # output_dir = args.output_dir
 if not isdir(output_dir):
     makedirs(output_dir)
@@ -69,7 +69,7 @@ paras = ParametersLoader(config_file)
 # testing_pids = LGG_pids[:8] + HGG_pids[:22]
 # validation_pids = LGG_pids[:2] + HGG_pids[:6]
 
-testing_patient_ids = paras.testing_patient_ids_covid
+testing_patient_ids = paras.training_patient_ids_covid
 
 total = 0
 for pid in testing_patient_ids:
