@@ -87,16 +87,12 @@ class ACDCReader(MIBasicTrain):
 
         if self.toy_problem:
             self.patient_ids = self.patient_ids[:2]
-
-        if self.toy_problem:
-            self.patient_ids = self.patient_ids[:2]
         for pid in self.patient_ids:
             image_data, labels = self.load_data(pid)
             for img in image_data:
                 self.hr_images.append(img)
             for l in labels:
-                self.gt_lables.append(l)
-
+                self.gt_labels.append(l)
             # pid as image ids
             self.img_ids += [pid] * len(image_data)
 
