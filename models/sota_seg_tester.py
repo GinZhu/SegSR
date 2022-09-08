@@ -7,6 +7,7 @@ from os.path import join
 from metrics.seg_evaluation import SegmentationEvaluation, BraTSSegEvaluation
 from datasets.OASIS_dataset import OASISSegTestSinglePatientDataset
 from datasets.BraTS_dataset import BraTSSegTestSinglePatientDataset
+from datasets.ACDC_dataset import ACDCSegTestSinglePatientDataset
 
 import segmentation_models_pytorch as smp
 
@@ -37,7 +38,7 @@ class SegTester(BasicTester):
             self.ptm_paths['seg_model'] = paras.well_trained_seg_model
 
         # testing data
-        valid_datasets = ['OASIS', 'BraTS',]
+        valid_datasets = ['OASIS', 'BraTS', 'ACDC']
         data_folder = self.paras.data_folder
         self.which_data = None
         if 'OASIS' in data_folder:
@@ -46,6 +47,9 @@ class SegTester(BasicTester):
         elif 'BraTS' in data_folder:
             self.testing_patient_ids = self.paras.testing_patient_ids_brats
             self.which_data = 'BraTS'
+        elif 'ACDC' in data_folder:
+            self.testing_patient_ids = self.paras.testing_patient_ids_acdc
+            self.which_data = 'ACDC'
         else:
             # add more
             raise ValueError('Invalid data, {}, only support {}'.format(data_folder, valid_datasets))
@@ -89,6 +93,10 @@ class SegTester(BasicTester):
                 )
             elif self.which_data == 'BraTS':
                 DS = BraTSSegTestSinglePatientDataset(
+                    self.paras.data_folder, pid, self.paras.gt_folder, gt_imgs=self.paras.gt_imgs
+                )
+            elif self.which_data == 'ACDC':
+                DS = ACDCSegTestSinglePatientDataset(
                     self.paras.data_folder, pid, self.paras.gt_folder, gt_imgs=self.paras.gt_imgs
                 )
             else:

@@ -4,7 +4,7 @@ from metrics.seg_evaluation import SegmentationEvaluation
 
 import numpy as np
 import nibabel as nib
-
+import torch
 from os.path import join
 from os import listdir
 from glob import glob
@@ -217,6 +217,41 @@ class ACDCSegDataset(ACDCReader, MIBasicTrain, MIBasicValid):
         img_id = self.img_ids[item]
 
         img_input = self.numpy_2_tensor(img_input).unsqueeze(0)
+        return {'in': img_input, 'gt': img_output, 'id': img_id}
+
+
+class ACDCSegTestSinglePatientDataset(MIBasicValid):
+
+    def __init__(self, data_folder, patient_id, gt_folder, gt_imgs=False):
+        super(ACDCSegTestSinglePatientDataset, self).__init__()
+        self.pid = patient_id
+        if gt_imgs:
+            gt_imgs_data = np.load(join(gt_folder, '{}_hrimg.npz'.format(patient_id)))
+            self.testing_imgs = gt_imgs_data[gt_imgs_data.files[0]]
+        else:
+            # load SR results
+            data_path = join(data_folder, 'inferences', '{}_inference_results.tar'.format(patient_id))
+            rec_imgs = torch.load(data_path)['rec_imgs']
+            imgs = []
+            for img in rec_imgs:
+                for sr in img:
+                    imgs.append(img[sr])
+            self.testing_imgs = imgs
+        self.testing_img_ids = [patient_id, ] * len(self.testing_imgs)
+        # load GT labels
+        gt_data = np.load(join(gt_folder, '{}_gt.npz'.format(patient_id)))
+        self.testing_gts = gt_data[gt_data.files[0]]
+
+    def test_len(self):
+        return len(self.testing_imgs)
+
+    def get_test_pair(self, item):
+        img_input = self.testing_imgs[item]
+        img_output = self.testing_gts[item]
+        img_id = self.testing_img_ids[item]
+
+        img_input = self.numpy_2_tensor(img_input).unsqueeze(0)
+
         return {'in': img_input, 'gt': img_output, 'id': img_id}
 
 

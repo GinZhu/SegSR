@@ -80,7 +80,7 @@ for pid in testing_patient_ids:
     print('GT Segmentation label ({}) of {} is saved to {}'.format(
         len(labels), pid, join(output_dir, '{}_gt.npz'.format(pid))
     ))
-    total == len(labels)
+    total += len(labels)
 
     # images
     images = ds.hr_images
