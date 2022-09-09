@@ -39,7 +39,7 @@ class SegTester(BasicTester):
             self.ptm_paths['seg_model'] = paras.well_trained_seg_model
 
         # testing data
-        valid_datasets = ['OASIS', 'BraTS', 'ACDC']
+        valid_datasets = ['OASIS', 'BraTS', 'ACDC', 'COVID']
         data_folder = self.paras.data_folder
         self.which_data = None
         if 'OASIS' in data_folder:
